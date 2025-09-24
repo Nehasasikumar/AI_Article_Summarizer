@@ -43,6 +43,7 @@ def is_strong_password(password):
 
 # ----------------- SIGNUP -----------------
 @app.route('/api/signup', methods=['POST'])
+@cross_origin()
 def signup():
     data = request.get_json()
     name = data.get('name')
@@ -198,6 +199,7 @@ def history():
 
 # ----------------- DELETE SUMMARY -----------------
 @app.route('/api/summary/<id>', methods=['DELETE'])
+@cross_origin()
 def delete_summary(id):
     email, error = get_email_from_token(request.headers.get('Authorization'))
     if error:
@@ -212,6 +214,7 @@ def delete_summary(id):
 
 # ----------------- RENAME SUMMARY -----------------
 @app.route('/api/summary/<id>', methods=['PUT'])
+@cross_origin()
 def rename_summary(id):
     email, error = get_email_from_token(request.headers.get('Authorization'))
     if error:
