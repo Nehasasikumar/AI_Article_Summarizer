@@ -1,27 +1,30 @@
-version: 1
+# docker-compose.yml for local Docker deployment
+
+version: '3.8'
 
 services:
-  - type: static
-    name: frontend
-    repo: https://github.com/Nehasasikumar/AI_Article_Summarizer.git
-    branch: main
-    buildCommand: npm install && npm run build
-    outputDir: dist
-    rootDir: frontend
-    envVars:
-      - key: VITE_API_BASE_URL
-        value: "[REPLACE WITH YOUR BACKEND URL ON RENDER, e.g. https://your-backend.onrender.com]"
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - SECRET_KEY=your_super_secret_key
+      - MONGODB_URI=your_mongodb_connection_string
+    depends_on:
+      - mongo  # If using local MongoDB
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:5000 (for local backend)
 
-  - type: web
-    name: backend
-    runtime: python
-    repo: https://github.com/Nehasasikumar/AI_Article_Summarizer.git
-    branch: main
-    buildCommand: pip install -r requirements.txt && python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
-    startCommand: python app.py
-    rootDir: backend
-    envVars:
-      - key: SECRET_KEY
-        value: "6db0a4b33b094c24e8d0c0534b7fe0922c1bbbe5b25494115b88037ffdcbe62e"
-      - key: MONGODB_URI
-        value: "mongodb+srv://Neha:Neha@@54@ai-article-summarizer.r3oeuyq.mongodb.net/?retryWrites=true&w=majority&appName=AI-Article-Summarizer"
+  mongo:
+    image: mongo:5.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
