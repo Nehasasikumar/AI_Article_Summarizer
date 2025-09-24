@@ -4,9 +4,7 @@ from pymongo import MongoClient
 import bcrypt
 import jwt
 from datetime import datetime, timedelta
-from newspaper import Article
 from transformers import pipeline
-import spacy
 import traceback
 import re
 from urllib.parse import unquote
@@ -14,8 +12,6 @@ import requests
 from bs4 import BeautifulSoup
 import os
 
-# Load spaCy and BART models
-nlp = spacy.load("en_core_web_sm")
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
 # JWT Secret
@@ -103,17 +99,9 @@ def get_email_from_token(auth_header):
     except jwt.InvalidTokenError:
         return None, 'Invalid token'
 
-# ----------------- EXTRACTIVE SUMMARY (spaCy) -----------------
-def extractive_summary_spacy(text, sentence_count=7):
-    doc = nlp(text)
-    sentences = list(doc.sents)
-
-    ranked = sorted(sentences, key=lambda s: sum(1 for token in s if token.pos_ in ['NOUN', 'PROPN']), reverse=True)
-    top_sentences = sorted(ranked[:sentence_count], key=lambda s: s.start)
-    return " ".join(str(s).strip() for s in top_sentences)
-
 # ----------------- SUMMARIZE -----------------
 @app.route('/api/summarize', methods=['POST'])
+@cross_origin()
 def summarize():
     email, error = get_email_from_token(request.headers.get('Authorization'))
     if error:
@@ -187,6 +175,7 @@ def summarize():
 
 # ----------------- HISTORY -----------------
 @app.route('/api/history', methods=['GET'])
+@cross_origin()
 def history():
     email, error = get_email_from_token(request.headers.get('Authorization'))
     if error:
@@ -194,8 +183,6 @@ def history():
 
     chats = list(history_collection.find({"email": email}, {"_id": 0}))
     return jsonify({"chats": chats}), 200
-
-#from urllib.parse import unquote
 
 # ----------------- DELETE SUMMARY -----------------
 @app.route('/api/summary/<id>', methods=['DELETE'])
@@ -232,7 +219,6 @@ def rename_summary(id):
         return jsonify({'error': 'Summary not found'}), 404
 
     return jsonify({'message': 'Title updated'}), 200
-
 
 # ----------------- MAIN -----------------
 if __name__ == '__main__':
