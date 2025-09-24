@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS, cross_origin
 from pymongo import MongoClient
 import bcrypt
@@ -42,7 +42,7 @@ def is_strong_password(password):
     )
 
 # ----------------- SIGNUP -----------------
-@app.route('/signup', methods=['POST'])
+@app.route('/api/signup', methods=['POST'])
 def signup():
     data = request.get_json()
     name = data.get('name')
@@ -63,7 +63,7 @@ def signup():
     return jsonify({'message': 'Signup successful'}), 200
 
 # ----------------- LOGIN -----------------
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 @cross_origin()
 def login():
     data = request.get_json()
@@ -112,7 +112,7 @@ def extractive_summary_spacy(text, sentence_count=7):
     return " ".join(str(s).strip() for s in top_sentences)
 
 # ----------------- SUMMARIZE -----------------
-@app.route('/summarize', methods=['POST'])
+@app.route('/api/summarize', methods=['POST'])
 def summarize():
     email, error = get_email_from_token(request.headers.get('Authorization'))
     if error:
@@ -185,7 +185,7 @@ def summarize():
     }), 200
 
 # ----------------- HISTORY -----------------
-@app.route('/history', methods=['GET'])
+@app.route('/api/history', methods=['GET'])
 def history():
     email, error = get_email_from_token(request.headers.get('Authorization'))
     if error:
@@ -197,7 +197,7 @@ def history():
 #from urllib.parse import unquote
 
 # ----------------- DELETE SUMMARY -----------------
-@app.route('/summary/<id>', methods=['DELETE'])
+@app.route('/api/summary/<id>', methods=['DELETE'])
 def delete_summary(id):
     email, error = get_email_from_token(request.headers.get('Authorization'))
     if error:
@@ -211,7 +211,7 @@ def delete_summary(id):
     return jsonify({'message': 'Summary deleted'}), 200
 
 # ----------------- RENAME SUMMARY -----------------
-@app.route('/summary/<id>', methods=['PUT'])
+@app.route('/api/summary/<id>', methods=['PUT'])
 def rename_summary(id):
     email, error = get_email_from_token(request.headers.get('Authorization'))
     if error:
@@ -229,6 +229,17 @@ def rename_summary(id):
         return jsonify({'error': 'Summary not found'}), 404
 
     return jsonify({'message': 'Title updated'}), 200
+
+# ----------------- SERVE FRONTEND -----------------
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_frontend(path):
+    if path.startswith('api/'):
+        return jsonify({'error': 'API route not found'}), 404
+    if os.path.exists(f'frontend/dist/{path}') and os.path.isfile(f'frontend/dist/{path}'):
+        return send_from_directory('frontend/dist', path)
+    else:
+        return send_from_directory('frontend/dist', 'index.html')
 
 # ----------------- MAIN -----------------
 if __name__ == '__main__':

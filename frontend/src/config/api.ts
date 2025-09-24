@@ -1,9 +1,8 @@
 import axios from 'axios';
 
 // Create Axios instance with base URL
-const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 export const api = axios.create({
-  baseURL: backendURL,
+  baseURL: '',
 });
 
 // Automatically attach token to every request
@@ -28,7 +27,7 @@ export const signupUser = async (
   password: string
 ) => {
   try {
-    const response = await api.post('/signup', { name, email, password });
+    const response = await api.post('/api/signup', { name, email, password });
     return response.data;
   } catch (error: any) {
     throw new Error(
@@ -42,7 +41,7 @@ export const signupUser = async (
 // ----------------------
 export const loginUser = async (email: string, password: string) => {
   try {
-    const response = await api.post('/login', { email, password });
+    const response = await api.post('/api/login', { email, password });
     return response.data;
   } catch (error: any) {
     throw new Error(
@@ -55,7 +54,7 @@ export const loginUser = async (email: string, password: string) => {
 // Fetch saved history
 // ----------------------
 export const getHistory = async () => {
-  const response = await api.get('/history');
+  const response = await api.get('/api/history');
   const chats = response.data.chats || [];
 
   const mapped = chats.map((item: any) => ({
@@ -73,7 +72,7 @@ export const getHistory = async () => {
 // ----------------------
 export const summarizeArticle = async (url: string, chat_id: string | undefined, messages: any[]) => {
   try {
-    const response = await api.post('/summarize', { url, chat_id, messages });
+    const response = await api.post('/api/summarize', { url, chat_id, messages });
     return response.data;
   } catch (error: any) {
     throw new Error(
@@ -87,7 +86,7 @@ export const summarizeArticle = async (url: string, chat_id: string | undefined,
 // ----------------------
 export const deleteSummary = async (id: string) => {
   try {
-    const response = await api.delete(`/summary/${id}`);
+    const response = await api.delete(`/api/summary/${id}`);
     return response.data;
   } catch (error: any) {
     throw new Error(error.response?.data?.error || 'Failed to delete summary.');
@@ -99,7 +98,7 @@ export const deleteSummary = async (id: string) => {
 // ----------------------
 export const renameSummary = async (id: string, title: string) => {
   try {
-    const response = await api.put(`/summary/${id}`, { title });
+    const response = await api.put(`/api/summary/${id}`, { title });
     return response.data;
   } catch (error: any) {
     throw new Error(error.response?.data?.error || 'Failed to rename summary.');
