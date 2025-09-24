@@ -4,15 +4,19 @@ from pymongo import MongoClient
 import bcrypt
 import jwt
 from datetime import datetime, timedelta
-from transformers import pipeline
 import traceback
 import re
 from urllib.parse import unquote
 import requests
 from bs4 import BeautifulSoup
 import os
+import nltk
+import heapq
 
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+nltk.download('punkt')
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize, sent_tokenize
 
 # JWT Secret
 SECRET_KEY = os.environ.get('SECRET_KEY', 'your_super_secret_key')
@@ -127,24 +131,42 @@ def summarize():
         if not article_text.strip():
             raise ValueError("Article content is empty")
 
-        # Step 1: Summarize each chunk
-        chunks = [article_text[i:i+1024] for i in range(0, len(article_text), 1024)]
-        chunk_summaries = []
-        for i, chunk in enumerate(chunks):
-            print(f"Summarizing chunk {i+1}/{len(chunks)}")
-            output = summarizer(chunk, max_length=150, min_length=40, do_sample=False)
-            chunk_summaries.append(output[0]['summary_text'])
-        
-        # Step 2: Combine chunk summaries and create a final summary
-        combined_summary = " ".join(chunk_summaries)
+        # Extractive summary using NLTK
+        stopWords = set(stopwords.words("english"))
+        words = word_tokenize(article_text)
+        freqTable = dict()
+        for word in words:
+            word = word.lower()
+            if word in stopWords:
+                continue
+            if word in freqTable:
+                freqTable[word] += 1
+            else:
+                freqTable[word] = 1
 
-        # If the combined summary is short, no need for another summarization pass.
-        if len(combined_summary.split()) < 150:
-            summary_text = combined_summary
-        else:
-            print("Creating final summary...")
-            final_summary_output = summarizer(combined_summary, max_length=512, min_length=100, do_sample=False)
-            summary_text = final_summary_output[0]['summary_text']
+        max_freq = max(freqTable.values())
+        for word in freqTable:
+            freqTable[word] = freqTable[word] / max_freq
+
+        sentences = sent_tokenize(article_text)
+        sentenceValue = dict()
+
+        for sentence in sentences:
+            for indexed, wordValue in enumerate(word_tokenize(sentence)):
+                if wordValue.lower() in freqTable:
+                    if sentence[:12] in sentenceValue:
+                        sentenceValue[sentence[:12]] += freqTable[wordValue.lower()]
+                    else:
+                        sentenceValue[sentence[:12]] = freqTable[wordValue.lower()]
+
+        sumValues = 0
+        for entry in sentenceValue:
+            sumValues += sentenceValue[entry]
+
+        average = int(sumValues / len(sentenceValue))
+
+        summary = heapq.nlargest(7, sentenceValue, key=sentenceValue.get)
+        summary_text = ' '.join(summary)
 
     except Exception as e:
         traceback.print_exc()
