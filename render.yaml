@@ -3,7 +3,7 @@ version: 1
 services:
   - type: web
     name: backend
-    runtime: python3
+    runtime: python
     repo: https://github.com/Nehasasikumar/AI_Article_Summarizer.git
     branch: main
     buildCommand: cd backend && pip install -r requirements.txt && python -m spacy download en_core_web_sm && cd ../frontend && npm install && npm run build
