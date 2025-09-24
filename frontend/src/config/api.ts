@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create Axios instance with base URL
 export const api = axios.create({
-  baseURL: import.meta.env.DEV ? 'http://localhost:5000' : window.location.origin,
+  baseURL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000' : window.location.origin),
 });
 
 // Automatically attach token to every request

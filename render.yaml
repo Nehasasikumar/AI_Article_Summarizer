@@ -1,13 +1,25 @@
 version: 1
 
 services:
+  - type: static
+    name: frontend
+    repo: https://github.com/Nehasasikumar/AI_Article_Summarizer.git
+    branch: main
+    buildCommand: npm install && npm run build
+    outputDir: dist
+    rootDir: frontend
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: "[REPLACE WITH YOUR BACKEND URL ON RENDER, e.g. https://your-backend.onrender.com]"
+
   - type: web
     name: backend
     runtime: python
     repo: https://github.com/Nehasasikumar/AI_Article_Summarizer.git
     branch: main
-    buildCommand: cd backend && pip install -r requirements.txt && python -m spacy download en_core_web_sm && cd ../frontend && npm install && npm run build
-    startCommand: cd backend && python app.py
+    buildCommand: pip install -r requirements.txt && python -m spacy download en_core_web_sm
+    startCommand: python app.py
+    rootDir: backend
     envVars:
       - key: SECRET_KEY
         value: "your_super_secret_key_12345"

@@ -233,16 +233,6 @@ def rename_summary(id):
 
     return jsonify({'message': 'Title updated'}), 200
 
-# ----------------- SERVE FRONTEND -----------------
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def serve_frontend(path):
-    if path.startswith('api/'):
-        return jsonify({'error': 'API route not found'}), 404
-    if os.path.exists(f'frontend/dist/{path}') and os.path.isfile(f'frontend/dist/{path}'):
-        return send_from_directory('frontend/dist', path)
-    else:
-        return send_from_directory('frontend/dist', 'index.html')
 
 # ----------------- MAIN -----------------
 if __name__ == '__main__':
