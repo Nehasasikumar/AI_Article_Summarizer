@@ -22,6 +22,6 @@ services:
     rootDir: backend
     envVars:
       - key: SECRET_KEY
-        value: "your_super_secret_key_12345"
+        value: "6db0a4b33b094c24e8d0c0534b7fe0922c1bbbe5b25494115b88037ffdcbe62e"
       - key: MONGODB_URI
         value: "mongodb+srv://Neha:Neha@@54@ai-article-summarizer.r3oeuyq.mongodb.net/?retryWrites=true&w=majority&appName=AI-Article-Summarizer"
