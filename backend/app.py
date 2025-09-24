@@ -12,20 +12,21 @@ import re
 from urllib.parse import unquote
 import requests
 from bs4 import BeautifulSoup
+import os
 
 # Load spaCy and BART models
 nlp = spacy.load("en_core_web_sm")
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
 # JWT Secret
-SECRET_KEY = "your_super_secret_key"
+SECRET_KEY = os.environ.get('SECRET_KEY', 'your_super_secret_key')
 
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app, origins="*")
 
 # MongoDB Setup
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient(os.environ.get('MONGODB_URI', 'mongodb://localhost:27017/'))
 db = client['chatbot_db']
 users = db['users']
 history_collection = db['history']
@@ -231,5 +232,6 @@ def rename_summary(id):
 
 # ----------------- MAIN -----------------
 if __name__ == '__main__':
-    print("Server running at http://localhost:5000")
-    app.run(debug=True, port=5000, use_reloader=False)
+    port = int(os.environ.get('PORT', 5000))
+    print(f"Server running at http://0.0.0.0:{port}")
+    app.run(host='0.0.0.0', port=port, debug=False)

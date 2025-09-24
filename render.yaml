@@ -1,0 +1,25 @@
+version: 1
+
+services:
+  - type: static
+    name: frontend
+    repo: https://github.com/Nehasasikumar/AI_Article_Summarizer.git
+    branch: main
+    buildCommand: cd frontend && npm install && npm run build
+    outputDir: frontend/dist
+    envVars:
+      - key: VITE_BACKEND_URL
+        value: "[REPLACE WITH YOUR BACKEND URL ON RENDER]"
+
+  - type: web
+    name: backend
+    runtime: python3
+    repo: https://github.com/Nehasasikumar/AI_Article_Summarizer.git
+    branch: main
+    buildCommand: cd backend && pip install -r requirements.txt && python -m spacy download en_core_web_sm
+    startCommand: cd backend && python app.py
+    envVars:
+      - key: SECRET_KEY
+        value: "[GENERATE A STRONG SECRET KEY]"
+      - key: MONGODB_URI
+        value: "[YOUR MONGO ATLAS CONNECTION STRING]"
