@@ -154,10 +154,10 @@ def summarize():
         for sentence in sentences:
             for indexed, wordValue in enumerate(word_tokenize(sentence)):
                 if wordValue.lower() in freqTable:
-                    if sentence[:12] in sentenceValue:
-                        sentenceValue[sentence[:12]] += freqTable[wordValue.lower()]
+                    if sentence in sentenceValue:
+                        sentenceValue[sentence] += freqTable[wordValue.lower()]
                     else:
-                        sentenceValue[sentence[:12]] = freqTable[wordValue.lower()]
+                        sentenceValue[sentence] = freqTable[wordValue.lower()]
 
         sumValues = 0
         for entry in sentenceValue:
