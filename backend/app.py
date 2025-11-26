@@ -107,9 +107,7 @@ def get_email_from_token(auth_header):
 @app.route('/api/summarize', methods=['POST'])
 @cross_origin()
 def summarize():
-    email, error = get_email_from_token(request.headers.get('Authorization'))
-    if error:
-        return jsonify({'error': error}), 401
+    email = 'anonymous'  # Removed auth requirement
 
     data = request.get_json()
     url = data.get('url')
@@ -172,21 +170,9 @@ def summarize():
         traceback.print_exc()
         return jsonify({'error': f'Summarization failed: {str(e)}'}), 500
 
-    if chat_id:
-        history_collection.update_one(
-            {'email': email, 'id': chat_id},
-            {'$set': {'messages': messages, 'timestamp': datetime.now().isoformat(), 'title': article_title}},
-            upsert=True
-        )
-    else:
+    # Skip database operations for demo
+    if not chat_id:
         chat_id = str(datetime.now().timestamp())
-        history_collection.insert_one({
-            "id": chat_id,
-            "email": email,
-            "title": article_title,
-            "messages": messages,
-            "timestamp": datetime.now().isoformat()
-        })
 
 
     return jsonify({
@@ -199,11 +185,10 @@ def summarize():
 @app.route('/api/history', methods=['GET'])
 @cross_origin()
 def history():
-    email, error = get_email_from_token(request.headers.get('Authorization'))
-    if error:
-        return jsonify({'error': error}), 401
+    email = 'anonymous'  # Removed auth requirement
 
-    chats = list(history_collection.find({"email": email}, {"_id": 0}))
+    # Return empty list since db operations are disabled for demo
+    chats = []
     return jsonify({"chats": chats}), 200
 
 # ----------------- DELETE SUMMARY -----------------

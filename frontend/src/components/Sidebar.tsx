@@ -183,46 +183,19 @@ export const Sidebar = ({
           )}
         </ScrollArea>
       </div>
+
       <div className="p-4 border-t border-accent/20">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="ghost" className="w-full justify-start">
-              <User className="w-5 h-5 mr-2" />
-              Profile
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80">
-            <div className="grid gap-4">
-              <div className="space-y-2">
-                <h4 className="font-medium leading-none">My Account</h4>
-                <p className="text-sm text-muted-foreground">
-                  Manage your account settings.
-                </p>
-              </div>
-              <div className="grid gap-2">
-                <div className="grid grid-cols-3 items-center gap-4">
-                  <span>Name</span>
-                  <span className="col-span-2 text-right">{user?.name || 'N/A'}</span>
-                </div>
-                <div className="grid grid-cols-3 items-center gap-4">
-                  <span>Email</span>
-                  <span className="col-span-2 text-right">{user?.email || 'N/A'}</span>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <Label htmlFor="theme-switch">Toggle Theme</Label>
-                  <div className="flex items-center gap-2">
-                    {theme === 'light' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                    <Switch
-                      id="theme-switch"
-                      checked={theme === 'dark'}
-                      onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
+        <div className="flex items-center justify-between gap-2">
+          <Label htmlFor="theme-switch">Theme</Label>
+          <div className="flex items-center gap-2">
+            {theme === 'light' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            <Switch
+              id="theme-switch"
+              checked={theme === 'dark'}
+              onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

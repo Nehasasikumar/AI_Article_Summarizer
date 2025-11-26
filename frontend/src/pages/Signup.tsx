@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AuthLayout } from '@/components/AuthLayout';
 import { useToast } from '@/hooks/use-toast';
+import { signupUser } from '@/config/api';
 
 export const Signup = () => {
   const [name, setName] = useState('');
@@ -45,32 +46,17 @@ export const Signup = () => {
     }
 
     try {
-      const res = await fetch('http://localhost:5000/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+      const response = await signupUser(name, email, password);
+      toast({
+        title: 'Account created!',
+        description: 'Your account has been created successfully. Please sign in.',
       });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        toast({
-          title: 'Account created!',
-          description: 'Your account has been created successfully. Please sign in.',
-        });
-        navigate('/login');
-      } else {
-        toast({
-          variant: 'destructive',
-          title: 'Signup failed',
-          description: data.error || 'Try again.',
-        });
-      }
-    } catch {
+      navigate('/login');
+    } catch (error) {
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: 'Something went wrong. Please try again.',
+        title: 'Signup failed',
+        description: (error as Error).message,
       });
     }
   };
