@@ -118,16 +118,82 @@ def summarize():
         return jsonify({'error': 'URL is required'}), 400
 
     try:
-        response = requests.get(url)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.content, 'html.parser')
-        
+
+        # Check if this is a journal homepage vs article page
+        is_journal_homepage = url.lower().endswith('?tab=toc') == False and any(indicator in url.lower() for indicator in ['/journal/', '/journals/', 'springer.com/journal'])
+        is_article_page = ('/article/' in url.lower() or '/chapter/' in url.lower() or ('/' in url.lower().split('?')[0].split('#')[0] and url.lower().split('?')[0].split('#')[0].count('/') > 3))
+
         article_title = soup.title.string if soup.title else "Untitled"
 
-        paragraphs = soup.find_all('p')
-        article_text = ' '.join([p.get_text() for p in paragraphs])
+        # Check if this is a journal homepage - not suitable for summarization
+        if is_journal_homepage and not is_article_page:
+            raise ValueError("This appears to be a journal homepage, not a specific article. Please provide a direct link to an article instead of the journal's main page.")
+
+        # Improved content extraction with multiple strategies
+        article_text = ""
+
+        # Strategy 1: Try to find main article content containers
+        content_selectors = [
+            'article',
+            '[role="main"]',
+            'main',
+            '.article-content',
+            '.post-content',
+            '.entry-content',
+            '.content',
+            '#content',
+            '.article-body',
+            '.post-body'
+        ]
+
+        for selector in content_selectors:
+            content_elem = soup.select_one(selector)
+            if content_elem:
+                paragraphs = content_elem.find_all('p')
+                article_text = ' '.join([p.get_text() for p in paragraphs])
+                if article_text.strip():
+                    break
+
+        # Strategy 2: If no content found, try extracting from all paragraphs
+        if not article_text.strip():
+            paragraphs = soup.find_all('p')
+            article_text = ' '.join([p.get_text() for p in paragraphs])
+
+        # Strategy 3: Fallback to extracting text from common content elements
+        if not article_text.strip():
+            text_elements = soup.find_all(['p', 'div', 'span', 'li'])
+            filtered_text = []
+            for elem in text_elements:
+                text = elem.get_text().strip()
+                # Only include text that's meaningful length and not boilerplate
+                if len(text) > 20 and not any(skip in text.lower() for skip in ['copyright', 'privacy policy', 'terms of service', 'sign up', 'login', 'subscribe']):
+                    filtered_text.append(text)
+            article_text = ' '.join(filtered_text)
+
+        # Strategy 4: Last resort - get all body text that's reasonably long
+        if not article_text.strip():
+            body = soup.find('body')
+            if body:
+                all_text = body.get_text()
+                # Split by double newlines to get paragraph-like chunks
+                chunks = [chunk.strip() for chunk in all_text.split('\n\n') if chunk.strip()]
+                meaningful_chunks = []
+                for chunk in chunks:
+                    # Only include chunks that look like content (not navigation/footer)
+                    if len(chunk) > 30 and not any(skip in chunk.lower() for skip in [
+                        'copyright', 'privacy policy', 'terms of service', 'sign up', 'login', 'subscribe',
+                        'cookies', 'accept cookies', 'cookie settings', 'follow us', 'contact us'
+                    ]):
+                        meaningful_chunks.append(chunk)
+                article_text = ' '.join(meaningful_chunks[:20])  # Limit to prevent huge extraction
 
         if not article_text.strip():
-            raise ValueError("Article content is empty")
+            raise ValueError("Unable to extract article content. The website may not allow automated content extraction.")
 
         # Extractive summary using NLTK
         stopWords = set(stopwords.words("english"))
