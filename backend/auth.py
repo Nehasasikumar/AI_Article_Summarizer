@@ -1,12 +1,10 @@
 import os
 import re
 from datetime import datetime, timedelta
-from typing import Optional
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
-from pymongo.collection import Collection
 
 security = HTTPBearer()
 
@@ -54,23 +52,3 @@ async def get_email_from_token(
             detail="Invalid authentication credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-
-async def get_current_user(
-    email: str = Depends(get_email_from_token),
-    users_collection: Collection = None
-):
-    """
-    Get user document from database.
-    Raises HTTPException if not found.
-    """
-    if users_collection is None:
-        # This should be injected, but for now, assume it's passed
-        raise HTTPException(status_code=500, detail="Users collection not provided")
-
-    user = users_collection.find_one({"email": email})
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
-    return user
