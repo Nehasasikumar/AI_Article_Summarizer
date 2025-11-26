@@ -5,6 +5,21 @@ interface User {
   email: string;
 }
 
+interface Message {
+  id: string;
+  type: 'user' | 'assistant';
+  content: string;
+  url?: string;
+  timestamp: string;
+}
+
+export interface Summary {
+  id: string;
+  title: string;
+  messages: Message[];
+  timestamp: string;
+}
+
 interface Store {
   user: User | null;
   theme: 'light' | 'dark';

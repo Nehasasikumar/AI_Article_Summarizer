@@ -107,7 +107,13 @@ def get_email_from_token(auth_header):
 @app.route('/api/summarize', methods=['POST'])
 @cross_origin()
 def summarize():
-    email = 'anonymous'  # Removed auth requirement
+    email, error = get_email_from_token(request.headers.get('Authorization'))
+    if error:
+        return jsonify({'error': error}), 401
+
+    user_doc = users.find_one({'email': email})
+    if not user_doc:
+        return jsonify({'error': 'User not found'}), 404
 
     data = request.get_json()
     url = data.get('url')
@@ -236,10 +242,59 @@ def summarize():
         traceback.print_exc()
         return jsonify({'error': f'Summarization failed: {str(e)}'}), 500
 
-    # Skip database operations for demo
-    if not chat_id:
-        chat_id = str(datetime.now().timestamp())
+    # Handle chat creation and message storage
+    current_time = datetime.utcnow()
 
+    if not chat_id:
+        # Create new chat
+        chat_id = str(current_time.timestamp())
+        chat_doc = {
+            'email': email,
+            'id': chat_id,
+            'title': article_title,
+            'messages': [
+                {
+                    'id': f"user_{current_time.timestamp()}",
+                    'type': 'user',
+                    'content': url,
+                    'url': url,
+                    'timestamp': current_time
+                },
+                {
+                    'id': f"assistant_{current_time.timestamp() + 1}",
+                    'type': 'assistant',
+                    'content': summary_text,
+                    'timestamp': current_time
+                }
+            ],
+            'timestamp': current_time
+        }
+        history_collection.insert_one(chat_doc)
+    else:
+        # Update existing chat with new messages
+        user_message = {
+            'id': f"user_{current_time.timestamp()}",
+            'type': 'user',
+            'content': url,
+            'url': url,
+            'timestamp': current_time
+        }
+        assistant_message = {
+            'id': f"assistant_{current_time.timestamp() + 1}",
+            'type': 'assistant',
+            'content': summary_text,
+            'timestamp': current_time
+        }
+
+        # Add messages to existing chat
+        history_collection.update_one(
+            {'email': email, 'id': chat_id},
+            {
+                '$push': {'messages': user_message},
+                '$push': {'messages': assistant_message},
+                '$set': {'timestamp': current_time}  # Update last modified
+            }
+        )
 
     return jsonify({
         "summary": summary_text,
@@ -251,11 +306,36 @@ def summarize():
 @app.route('/api/history', methods=['GET'])
 @cross_origin()
 def history():
-    email = 'anonymous'  # Removed auth requirement
+    email, error = get_email_from_token(request.headers.get('Authorization'))
+    if error:
+        return jsonify({'error': error}), 401
 
-    # Return empty list since db operations are disabled for demo
-    chats = []
-    return jsonify({"chats": chats}), 200
+    user_doc = users.find_one({'email': email})
+    if not user_doc:
+        return jsonify({'error': 'User not found'}), 404
+
+    # Retrieve all chats for the user, sorted by timestamp descending
+    try:
+        print(f"DEBUG: Retrieving history for email: {email}")
+
+        chats_cursor = history_collection.find(
+            {'email': email},
+            {'_id': 0, 'email': 0}  # Exclude MongoDB _id and email fields
+        ).sort('timestamp', -1)  # Sort by timestamp descending (most recent first)
+
+        chats = list(chats_cursor)
+        print(f"DEBUG: Found {len(chats)} chats in database for {email}")
+
+        # Convert datetime objects to ISO strings for JSON serialization
+        for chat in chats:
+            chat['timestamp'] = chat['timestamp'].isoformat()
+            for message in chat['messages']:
+                message['timestamp'] = message['timestamp'].isoformat()
+
+        return jsonify({"chats": chats}), 200
+    except Exception as e:
+        print(f"Error retrieving history: {str(e)}")
+        return jsonify({'error': 'Failed to retrieve chat history'}), 500
 
 # ----------------- DELETE SUMMARY -----------------
 @app.route('/api/summary/<id>', methods=['DELETE'])
@@ -264,6 +344,10 @@ def delete_summary(id):
     email, error = get_email_from_token(request.headers.get('Authorization'))
     if error:
         return jsonify({'error': error}), 401
+
+    user_doc = users.find_one({'email': email})
+    if not user_doc:
+        return jsonify({'error': 'User not found'}), 404
 
     result = history_collection.delete_one({'email': email, 'id': id})
 
@@ -279,6 +363,10 @@ def rename_summary(id):
     email, error = get_email_from_token(request.headers.get('Authorization'))
     if error:
         return jsonify({'error': error}), 401
+
+    user_doc = users.find_one({'email': email})
+    if not user_doc:
+        return jsonify({'error': 'User not found'}), 404
 
     data = request.get_json()
     new_title = data.get('title')

@@ -5,7 +5,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { ChatInterface } from '@/components/ChatInterface';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { getHistory } from '@/config/api';
-import { Summary } from '@/state';
+import { Summary } from '../state';
 
 export const Dashboard = () => {
   const [summaries, setSummaries] = useState<Summary[]>([]);

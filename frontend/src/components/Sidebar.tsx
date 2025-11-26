@@ -14,13 +14,20 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
+interface Message {
+  id: string;
+  type: 'user' | 'assistant';
+  content: string;
+  url?: string;
+  timestamp: string;
+}
+
 interface Summary {
   id: string;
   title: string;
   created_at?: string;
   timestamp?: string;
-  url: string;
-  summary: string;
+  messages: Message[];
 }
 
 interface SidebarProps {
