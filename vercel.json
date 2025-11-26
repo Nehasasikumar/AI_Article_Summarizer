@@ -9,14 +9,15 @@
       }
     }
   ],
+  "outputDirectory": "frontend/dist",
   "routes": [
     {
       "src": "/api/(.*)",
       "dest": "https://ai-summarizer-backend.onrender.com/api/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "/frontend/$1"
+      "src": "/.*",
+      "dest": "/index.html"
     }
   ],
   "env": {
