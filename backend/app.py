@@ -3,6 +3,7 @@ import os
 import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 
 sys.path.append(os.path.dirname(__file__))
@@ -27,6 +28,17 @@ async def health_check():
     return {"message": "AI Article Summarizer API is running"}
 
 # CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, specify your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Serve React build files (for production single-service deployment)
+if os.path.exists("frontend/dist"):
+    app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="static")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # In production, specify your frontend URL
