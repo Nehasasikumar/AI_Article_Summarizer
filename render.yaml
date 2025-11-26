@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: ai-summarizer-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    region: singapore
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHONPATH
+        value: /app
+      - key: PORT
+        value: 5000

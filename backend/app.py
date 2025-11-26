@@ -21,6 +21,11 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="AI Article Summarizer API", lifespan=lifespan)
 
+# Health check endpoint for Render
+@app.get("/")
+async def health_check():
+    return {"message": "AI Article Summarizer API is running"}
+
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,

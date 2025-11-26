@@ -1,28 +1,21 @@
-# Use Python 3.10 as base image
-FROM python:3.10-slim
+# Use Python 3.11 as base image (can change to 3.12 if preferred)
+FROM python:3.11-slim
 
 # Set working directory
 WORKDIR /app
 
-# Install Node.js for building frontend
-RUN apt-get update && apt-get install -y node.js npm && rm -rf /var/lib/apt/lists/*
-
 # Copy requirements and install Python dependencies
 COPY backend/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r backend/requirements.txt
 
-# Copy backend code
-COPY backend/ .
+# Download NLTK data
+RUN python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
 
-# Download spaCy model
-RUN python -m spacy download en_core_web_sm
-
-# Copy frontend code and build it
-COPY frontend/ frontend/
-RUN cd frontend && npm install && npm run build
+# Copy backend application code
+COPY backend/ ./
 
 # Expose port
 EXPOSE 5000
 
-# Run the app
-CMD ["python", "app.py"]
+# Run the FastAPI app with uvicorn
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5000"]
