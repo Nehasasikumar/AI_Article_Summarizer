@@ -1,2 +1,11 @@
 node_modules/
 venv/
+backend/__pycache__/
+frontend/dist/
+.env
+.DS_Store
+*.log
+.idea/
+.vscode/
+*.pyc
+__pycache__/
