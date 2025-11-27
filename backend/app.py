@@ -38,12 +38,11 @@ default_origins = [
 ]
 
 # Allow additional origins from environment variable
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
-if allowed_origins:
-    for origin in allowed_origins:
-        origin = origin.strip()
-        if origin:
-            default_origins.append(origin)
+additional_origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
+additional_origins = [origin.strip() for origin in additional_origins if origin.strip()]
+default_origins.extend(additional_origins)
+
+print(f"Allowed CORS origins: {default_origins}", flush=True)
 
 app.add_middleware(
     CORSMiddleware,
