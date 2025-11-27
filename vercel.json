@@ -4,7 +4,7 @@
   "installCommand": "cd frontend && npm install",
   "outputDirectory": "frontend/dist",
   "env": {
-    "VITE_API_BASE_URL": "https://ai-summarizer-backend.onrender.com"
+    "VITE_API_BASE_URL": "https://ai-article-summarizer-63lf.onrender.com"
   },
   "rewrites": [
     {
