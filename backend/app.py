@@ -35,6 +35,8 @@ default_origins = [
     "http://127.0.0.1:8081",
     "http://localhost:5000",
     "http://127.0.0.1:5000",
+    # Production origins
+    "https://ai-article-summarizer-zeta.vercel.app",
 ]
 
 # Allow additional origins from environment variable
