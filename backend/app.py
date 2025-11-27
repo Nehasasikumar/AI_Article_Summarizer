@@ -27,18 +27,27 @@ app = FastAPI(title="AI Article Summarizer API", lifespan=lifespan)
 async def health_check():
     return {"message": "AI Article Summarizer API is running"}
 
-# CORS middleware
+# CORS configuration
+default_origins = [
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "http://localhost:8081",
+    "http://127.0.0.1:8081",
+    "http://localhost:5000",
+    "http://127.0.0.1:5000",
+]
+
+# Allow additional origins from environment variable
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
+if allowed_origins:
+    for origin in allowed_origins:
+        origin = origin.strip()
+        if origin:
+            default_origins.append(origin)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:8080",
-        "http://127.0.0.1:8080",
-        "http://localhost:8081",
-        "http://127.0.0.1:8081",
-        "http://localhost:5000",
-        "http://127.0.0.1:5000",
-        # Add production URLs here when deploying
-    ],
+    allow_origins=default_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
