@@ -17,4 +17,4 @@ services:
       - key: PORT
         value: 5000
       - key: ALLOWED_ORIGINS
-        value: "https://ai-article-summarizer.vercel.app"
+        value: "https://ai-article-summarizer-zeta.vercel.app"
