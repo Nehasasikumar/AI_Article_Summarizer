@@ -1,20 +1,149 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Article Summarizer</title>
-    <meta name="description" content="AI-powered article summarization tool" />
-    <meta name="author" content="Article Summarizer" />
-
-    <!-- <meta property="og:title" content="Article Summarizer" />
-    <meta property="og:description" content="AI-powered article summarization tool" /> -->
-   
-
-  </head>
-
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA - Article Summarizer & Brainstormer</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- Header / Navbar -->
+        <header class="navbar">
+            <div class="logo">
+                <i data-lucide="sparkles" class="logo-icon"></i>
+                <span>AURA</span>
+            </div>
+            <button class="theme-toggle" id="themeToggle" title="Toggle Light/Dark Mode">
+                <i data-lucide="sun" class="sun-icon"></i>
+                <i data-lucide="moon" class="moon-icon"></i>
+            </button>
+        </header>
+        
+        <!-- Main Content Grid -->
+        <main class="main-content">
+            
+            <!-- Section 1: URL input bar -->
+            <section class="url-card card">
+                <h2>Analyze Website URL</h2>
+                <form id="analyzeForm" class="input-form">
+                    <div class="input-group">
+                        <i data-lucide="link" class="link-icon"></i>
+                        <input type="url" id="articleUrlInput" placeholder="Paste article URL here (e.g., https://example.com/blog-post)" required>
+                        <button type="submit" class="primary-btn" id="analyzeSubmitBtn">
+                            <span>Analyze</span>
+                            <i data-lucide="arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Simple Loader -->
+                <div class="loader-wrapper" id="loaderWrapper">
+                    <div class="spinner"></div>
+                    <span id="loaderStatusText">Processing webpage...</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressBarFill"></div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section 2: Article Info (Metadata Display) -->
+            <section class="article-info-card card" id="articleInfoCard">
+                <h1 id="displayTitle">Article Title</h1>
+                <div class="meta-row">
+                    <a id="displayUrl" href="#" target="_blank" class="meta-link"><i data-lucide="external-link"></i> Source Link</a>
+                    <button class="export-btn" id="exportBtn"><i data-lucide="download"></i> Export Report (.md)</button>
+                </div>
+            </section>
+            
+            <!-- Section 3: Dual Summaries Column -->
+            <section class="summaries-container" id="summariesContainer">
+                <!-- Abstractive Summary Card -->
+                <div class="summary-card card" id="abstractiveCard">
+                    <div class="card-header">
+                        <i data-lucide="file-text"></i>
+                        <h3>Abstractive Summary</h3>
+                    </div>
+                    <div class="card-body" id="abstractiveContent">
+                        <p class="placeholder-text">Paste a website URL above to generate summaries.</p>
+                    </div>
+                </div>
+                
+                <!-- Extractive Summary Card -->
+                <div class="summary-card card" id="extractiveCard">
+                    <div class="card-header">
+                        <i data-lucide="highlighter"></i>
+                        <h3>Key Sentences (Extractive)</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="bullet-list" id="extractiveContent">
+                            <li class="placeholder-text">Key sentences will be listed here.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section 4: Chatbot Brainstormer -->
+            <section class="chat-container card" id="chatContainer">
+                <div class="chat-header">
+                    <i data-lucide="bot"></i>
+                    <h3>Article Brainstormer (RAG AI)</h3>
+                </div>
+                
+                <!-- Message Thread -->
+                <div class="chat-messages" id="chatMessages">
+                    <div class="system-message message">
+                        <div class="avatar"><i data-lucide="bot"></i></div>
+                        <div class="msg-content">
+                            <p>Welcome! Once an article is analyzed, you can ask questions directly grounded in its content. RAG AI will find and reference context automatically.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Thinking Indicator -->
+                <div class="typing-indicator" id="typingIndicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span class="typing-text">AURA is thinking...</span>
+                </div>
+                
+                <!-- Suggestions -->
+                <div class="suggestion-chips" id="suggestionChips">
+                    <button class="chip">What is the main point?</button>
+                    <button class="chip">Summarize it simply.</button>
+                    <button class="chip">What is the conclusion?</button>
+                </div>
+                
+                <!-- Chat Input Form -->
+                <form id="chatForm" class="chat-form">
+                    <input type="text" id="chatInput" placeholder="Ask a question about the analyzed article..." autocomplete="off">
+                    <button type="submit" class="send-btn" id="chatSendBtn" disabled>
+                        <i data-lucide="send"></i>
+                    </button>
+                </form>
+            </section>
+            
+        </main>
+    </div>
+    
+    <!-- Custom Popups / Alerts -->
+    <div class="alert-toast" id="alertToast">
+        <i data-lucide="alert-circle" class="alert-icon"></i>
+        <span class="alert-message" id="alertMessage">Error message here</span>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
 </html>

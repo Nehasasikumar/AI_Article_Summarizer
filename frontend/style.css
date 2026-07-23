@@ -1,0 +1,604 @@
+/* ==========================================================================
+   AURA Style Sheet - Professional & Formal Corporate Design System
+   ========================================================================== */
+
+:root {
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-display: 'Outfit', var(--font-primary);
+    
+    /* Dark Theme (Formal Navy & Steel Gray) */
+    --bg-app: hsl(220, 25%, 9%);
+    --bg-card: hsl(220, 20%, 14%);
+    --border-color: hsl(220, 15%, 22%);
+    --border-hover: hsl(220, 20%, 30%);
+    
+    --text-primary: hsl(210, 40%, 96%);
+    --text-secondary: hsl(215, 20%, 75%);
+    --text-muted: hsl(215, 15%, 55%);
+    
+    --accent-color: hsl(212, 72%, 52%);  /* Professional Corporate Blue */
+    --accent-hover: hsl(212, 75%, 60%);
+    --accent-bg: hsla(212, 72%, 52%, 0.1);
+    
+    --success-color: hsl(140, 40%, 45%);
+    --danger-color: hsl(355, 60%, 55%);
+    --toast-bg: hsla(220, 20%, 8%, 0.95);
+    
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    
+    --transition: 0.2s ease-in-out;
+}
+
+/* Light Theme (Formal Corporate White & Slate) */
+[data-theme="light"] {
+    --bg-app: hsl(210, 20%, 96%);
+    --bg-card: hsl(0, 0%, 100%);
+    --border-color: hsl(210, 16%, 86%);
+    --border-hover: hsl(210, 20%, 75%);
+    
+    --text-primary: hsl(220, 30%, 12%);
+    --text-secondary: hsl(220, 15%, 35%);
+    --text-muted: hsl(220, 10%, 55%);
+    
+    --accent-color: hsl(215, 80%, 40%);  /* Dark Slate Navy */
+    --accent-hover: hsl(215, 85%, 32%);
+    --accent-bg: hsla(215, 80%, 40%, 0.08);
+    
+    --success-color: hsl(140, 50%, 32%);
+    --danger-color: hsl(355, 65%, 42%);
+    --toast-bg: hsla(0, 0%, 100%, 0.95);
+}
+
+/* Global Resets */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+    line-height: 1.5;
+    padding-bottom: 40px;
+    transition: background-color var(--transition), color var(--transition);
+}
+
+.app-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 1. Header / Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 30px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: 0.5px;
+    color: var(--text-primary);
+}
+
+.logo-icon {
+    color: var(--accent-color);
+    width: 24px;
+    height: 24px;
+}
+
+.theme-toggle {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: all var(--transition);
+}
+
+.theme-toggle:hover {
+    background: var(--accent-bg);
+    border-color: var(--accent-color);
+}
+
+[data-theme="dark"] .sun-icon { display: block; }
+[data-theme="dark"] .moon-icon { display: none; }
+[data-theme="light"] .sun-icon { display: none; }
+[data-theme="light"] .moon-icon { display: block; }
+
+/* 2. Layout Cards */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: border-color var(--transition);
+}
+
+.card h2 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+/* 3. URL input form */
+.input-form {
+    width: 100%;
+}
+
+.input-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: var(--bg-app);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    transition: border-color var(--transition);
+}
+
+.input-group:focus-within {
+    border-color: var(--accent-color);
+}
+
+.link-icon {
+    color: var(--text-muted);
+    width: 18px;
+}
+
+.input-group input {
+    flex-grow: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 14px;
+    outline: none;
+    padding: 6px 0;
+}
+
+.primary-btn {
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background var(--transition);
+}
+
+.primary-btn:hover {
+    background: var(--accent-hover);
+}
+
+/* 4. Loader */
+.loader-wrapper {
+    display: none; /* toggled via JS */
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2.5px solid var(--border-color);
+    border-top: 2.5px solid var(--accent-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loader-wrapper span {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.progress-bar {
+    flex-grow: 1;
+    height: 4px;
+    background: var(--border-color);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: var(--accent-color);
+    transition: width 0.3s ease;
+}
+
+/* 5. Article Info Panel */
+.article-info-card {
+    display: none; /* toggled via JS */
+}
+
+.article-info-card h1 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 12px;
+}
+
+.meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+}
+
+.meta-item {
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.meta-item i {
+    width: 14px;
+    height: 14px;
+    color: var(--text-muted);
+}
+
+.meta-link {
+    font-size: 13px;
+    color: var(--accent-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+}
+
+.meta-link:hover {
+    text-decoration: underline;
+}
+
+.export-btn {
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all var(--transition);
+}
+
+.export-btn:hover {
+    background: var(--accent-color);
+    color: #fff;
+}
+
+/* 6. Dual Summaries Columns */
+.summaries-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 768px) {
+    .summaries-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.summary-card {
+    margin-bottom: 24px;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+    color: var(--accent-color);
+}
+
+.card-header i {
+    width: 18px;
+}
+
+.card-header h3 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.card-body {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.card-body p {
+    margin-bottom: 12px;
+}
+
+.card-body p:last-child {
+    margin-bottom: 0;
+}
+
+.bullet-list {
+    list-style: none;
+}
+
+.bullet-list li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 12px;
+}
+
+.bullet-list li:last-child {
+    margin-bottom: 0;
+}
+
+.bullet-list li::before {
+    content: "•";
+    color: var(--accent-color);
+    font-size: 16px;
+    position: absolute;
+    left: 4px;
+    top: -1px;
+}
+
+.placeholder-text {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* 7. Chatbot Brainstormer */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 480px;
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 16px;
+}
+
+.chat-header i {
+    color: var(--accent-color);
+    width: 18px;
+}
+
+.chat-header h3 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-right: 4px;
+    margin-bottom: 16px;
+}
+
+.message {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.message .avatar {
+    width: 32px;
+    height: 32px;
+    background-color: var(--border-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--text-secondary);
+}
+
+.message.user {
+    flex-direction: row-reverse;
+}
+
+.message.user .avatar {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+.msg-content {
+    background-color: var(--bg-app);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    font-size: 13.5px;
+    max-width: 75%;
+}
+
+.message.user .msg-content {
+    background-color: var(--accent-bg);
+    border-color: var(--accent-color);
+}
+
+.typing-indicator {
+    display: none; /* toggled via JS */
+    align-items: center;
+    gap: 4px;
+    padding-left: 44px;
+    margin-bottom: 16px;
+}
+
+.typing-indicator span {
+    width: 6px;
+    height: 6px;
+    background-color: var(--text-muted);
+    border-radius: 50%;
+    animation: bounce 1.3s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(2) { animation-delay: 0.15s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-4px); }
+}
+
+.typing-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: 6px;
+}
+
+/* Suggestion Chips */
+.suggestion-chips {
+    display: none; /* toggled via JS once article is loaded */
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.chip {
+    background-color: var(--bg-app);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.chip:hover {
+    border-color: var(--accent-color);
+    background-color: var(--accent-bg);
+    color: var(--text-primary);
+}
+
+/* Chat Input Bar */
+.chat-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.chat-form input {
+    flex-grow: 1;
+    background-color: var(--bg-app);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color var(--transition);
+}
+
+.chat-form input:focus {
+    border-color: var(--accent-color);
+}
+
+.send-btn {
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background var(--transition);
+}
+
+.send-btn:disabled {
+    background-color: var(--border-color);
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
+
+.send-btn:not(:disabled):hover {
+    background-color: var(--accent-hover);
+}
+
+/* 8. Alert Toast */
+.alert-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background-color: var(--toast-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(100px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    max-width: 400px;
+}
+
+.alert-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.alert-icon {
+    width: 18px;
+    flex-shrink: 0;
+}
+
+.alert-message {
+    font-size: 13.5px;
+    font-weight: 500;
+}

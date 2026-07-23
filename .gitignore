@@ -1,11 +1,24 @@
-node_modules/
+# Virtual Environment
 venv/
-frontend/dist/
+.venv/
+env/
+
+# Configuration and Credentials
 .env
-.DS_Store
-*.log
-.idea/
-.vscode/
-*.py[cod]
-*$py.class
+# Local Databases and Storage
+database/db.json
+vectorstore/
+
+# Python caching
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+.env.example
+.env.example
+.env.example
